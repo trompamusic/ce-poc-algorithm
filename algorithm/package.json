@@ -1,0 +1,27 @@
+{
+  "name": "ce-digital-score-edition-component-algorithm",
+  "author": "Christiaan Scheermeijer <christiaan@videodock.com>",
+  "version": "0.1.0",
+  "main": "build/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "npm run clear && babel ./src -d ./build",
+    "clear": "rm -rf build && mkdir build",
+    "start": "nodemon src/index.js --exec babel-node",
+    "serve": "node build/index.js"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.4",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.3.4",
+    "apollo-link": "^1.2.11",
+    "apollo-link-ws": "^1.0.17",
+    "bluebird": "^3.5.3",
+    "graphql": "^14.1.1",
+    "graphql-tag": "^2.10.1",
+    "nodemon": "^1.18.10",
+    "subscriptions-transport-ws": "^0.9.16",
+    "ws": "^6.2.0"
+  }
+}
