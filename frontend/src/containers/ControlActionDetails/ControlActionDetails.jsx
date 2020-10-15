@@ -114,8 +114,8 @@ class ControlActionDetails extends Component {
   }
 }
 
-export const CONTROL_ACTION_QUERY = gql`
-    query ($identifier: String!) {
+export const CONTROL_ACTION_QUERY = gql`  
+    query ($identifier: ID!) {
         ControlAction(identifier: $identifier) {
             identifier
             description
@@ -150,7 +150,7 @@ export const CONTROL_ACTION_QUERY = gql`
 `;
 
 export const CONTROL_ACTION_SUBSCRIPTION = gql`
-    subscription ($identifier: String!) {
+    subscription ($identifier: ID!) {
         ControlActionMutation(identifier: $identifier) {
             identifier
         }

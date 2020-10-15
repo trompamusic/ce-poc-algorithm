@@ -15,7 +15,7 @@ const httpLink = new HttpLink({
 });
 
 const wsLink = new WebSocketLink({
-  uri    : uri.replace(/https?/, 'ws'),
+  uri    : uri.replace(/^http/, 'ws').replace(/^https/, 'wss'),
   options: {
     reconnect: true,
     lazy     : true,

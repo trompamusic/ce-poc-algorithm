@@ -1,5 +1,5 @@
 {
-  "name": "ce-digital-score-edition-component-algorithm",
+  "name": "ce-poc-algorithm-runner",
   "author": "Christiaan Scheermeijer <christiaan@videodock.com>",
   "version": "0.1.0",
   "main": "build/index.js",

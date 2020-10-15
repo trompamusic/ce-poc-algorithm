@@ -177,7 +177,7 @@ class CreateControlActionForm extends Component {
 }
 
 export const ENTRY_POINT_QUERY = gql`
-    query($identifier: String) {
+    query($identifier: ID) {
         EntryPoint(identifier: $identifier) {
             identifier
             title
@@ -218,8 +218,8 @@ export const ENTRY_POINT_QUERY = gql`
 
 export const CREATE_CONTROL_ACTION = gql`
     mutation (
-    $entryPointIdentifier: String!,
-    $potentialActionIdentifier: String!,
+    $entryPointIdentifier: ID!,
+    $potentialActionIdentifier: ID!,
     $propertyObject: [_PropertyInput],
     $propertyValueObject: [_PropertyValueInput]
 

@@ -5,10 +5,12 @@ services:
   trompa-pilot-poc-algorithm:
     image: videodock/trompa-pilot-poc-algorithm
     build: ./algorithm
+    volumes:
+    - ./algorithm/tmp:/app/tmp
     environment:
       - NODE_ENV=development
         # The algorithm runs inside a Docker container, but needs to access the CE API which runs in a different container.
-      - GRAPHQL_WEBSOCKET_URL=ws://host.docker.internal:4000/graphql
+      - GRAPHQL_WEBSOCKET_URL=wss://api-test.trompamusic.eu/graphql
         # The EntryPoint which the algorithm listens to
       - ENTRY_POINT_IDENTIFIER=d7a3b614-4c40-413f-99d6-c0da2c844963
 
@@ -18,7 +20,7 @@ services:
       context: ./frontend
       args:
           # The frontend application doesn't need the `ce-api_api_1` host
-        - REACT_APP_GRAPHQL_URL=http://localhost:4000/graphql
+        - REACT_APP_GRAPHQL_URL=https://api-test.trompamusic.eu
           # The EntryPoint identifier
         - REACT_APP_ENTRY_POINT_IDENTIFIER=d7a3b614-4c40-413f-99d6-c0da2c844963
     ports:

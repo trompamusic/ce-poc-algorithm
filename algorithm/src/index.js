@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import http from 'https';
-import { spawn } from 'child_process';
-import { execute, makePromise } from 'apollo-link'
+import { spawn, spawnSync } from 'child_process';
+import { execute, makePromise } from 'apollo-link';
 import { WebSocketLink } from 'apollo-link-ws';
 import Promise from 'bluebird';
 import gql from 'graphql-tag';
@@ -11,6 +11,7 @@ import ws from 'ws';
 
 const GRAPHQL_WEBSOCKET_URL = process.env.GRAPHQL_WEBSOCKET_URL || 'ws://api-test.trompamusic.eu';
 const ENTRY_POINT_IDENTIFIER = process.env.ENTRY_POINT_IDENTIFIER;
+const PROCESSING_MODE = process.env.PROCESSING_MODE || 'realtime';
 
 const TMP_PATH = path.resolve(__dirname, '../tmp');
 
@@ -47,7 +48,7 @@ const CONTROL_ACTION_SUBSCRIPTION = gql`
 `;
 
 const CONTROL_ACTION_QUERY = gql`
-    query ($identifier: String!) {
+    query ($identifier: ID!) {
         ControlAction(identifier: $identifier) {
             actionStatus
             identifier
@@ -68,7 +69,7 @@ const CONTROL_ACTION_QUERY = gql`
 `;
 
 const CONTROL_ACTION_MUTATION = gql`
-    mutation ($identifier: ID!, $status: ControlActionStatus!, $error: String) {
+    mutation ($identifier: ID!, $status: ActionStatusType!, $error: String) {
         UpdateControlAction (
             identifier: $identifier,
             actionStatus: $status,
@@ -126,11 +127,10 @@ const CREATE_DIGITAL_DOCUMENT_MUTATION = gql`
 `;
 
 const ADD_DIGITAL_DOCUMENT_TO_CONTROL_ACTION_MUTATION = gql`
-    mutation ($controlActionIdentifier: String!, $digitalDocumentIdentifier: String!) {
-        AddActionInterfaceThingInterface (
-            from: {identifier: $controlActionIdentifier, type: ControlAction}
-            to: {identifier: $digitalDocumentIdentifier, type: DigitalDocument}
-            field: result
+    mutation ($controlActionIdentifier: ID!, $digitalDocumentIdentifier: ID!) {
+        AddControlActionResult (
+            from: {identifier: $controlActionIdentifier}
+            to: {identifier: $digitalDocumentIdentifier}
         ) {
             from {
                 __typename
@@ -205,19 +205,57 @@ async function addResultToControlAction(controlActionIdentifier, digitalDocument
 }
 
 /**
+ * Unzip the given MXL file and return the XML file
+ * @param mxlFile
+ * @returns {Promise}
+ */
+async function obtainMusicXmlFromMxl(mxlFile) {
+  const { name } = path.parse(mxlFile);
+  const unzipFolder = path.join(TMP_PATH, name);
+
+  return new Promise((resolve, reject) => {
+    // unzip the mxl file in a separate directory
+    const unzip = spawn('unzip', ['-d', unzipFolder, mxlFile]);
+
+    // the process has caused an error
+    unzip.on('error', error => {
+      reject(error.message);
+    });
+
+    // finished running the command.
+    unzip.on('close', code => {
+      debug(`Unzip mxl result: ${code}`);
+
+      // read the unzip output directory contents
+      const outputFiles = fs.readdirSync(unzipFolder);
+
+      // find the first xml file in the directory. This should actually be found by using the mxl `container.xml`
+      // but that is outside the scope of this poc.
+      const uncompressedFile = path.join(unzipFolder, outputFiles.find(file => /.xml$/.test(file)));
+
+      if (code === 0 && fs.existsSync(uncompressedFile)) {
+        resolve(uncompressedFile);
+      } else {
+        reject('Failed to un-compress xml');
+      }
+    });
+  });
+}
+
+/**
  * Download a XML file from an URL and store it locally.
  *
  * @param {string} url The XML URL.
  * @returns {Promise}
  */
-async function downloadXmlFromURL(url) {
+async function downloadSourceFromURL(url) {
+  const filename = Date.now();
+  const outputFile = path.resolve(TMP_PATH, `${filename}-${path.basename(url)}`);
+  const file = fs.createWriteStream(outputFile);
+
+  debug(`Downloading XML from URL: ${url} to file: ${outputFile}`);
+
   return new Promise((resolve) => {
-    const filename = Date.now();
-    const outputFile = path.resolve(TMP_PATH, `${filename}-${path.basename(url)}`);
-    const file = fs.createWriteStream(outputFile);
-
-    debug(`Downloading XML from URL: ${url} to file: ${outputFile}`);
-
     http.get(url, function (response) {
       response.pipe(file);
 
@@ -227,6 +265,11 @@ async function downloadXmlFromURL(url) {
       });
 
       file.on('close', () => {
+        // we have a compressed MusicXML file @link https://www.musicxml.com/tutorial/compressed-mxl-files/
+        if (/.mxl$/.test(outputFile)) {
+          return obtainMusicXmlFromMxl(outputFile);
+        }
+
         resolve(outputFile);
       });
     });
@@ -241,10 +284,19 @@ async function downloadXmlFromURL(url) {
  */
 async function transformMusicXMLToMei(digitalDocument) {
   // download the XML first.
-  const xmlFile = await downloadXmlFromURL(digitalDocument.source);
+  const sourceFile = await downloadSourceFromURL(digitalDocument.source);
+
+  // the xmlFile is the sourceFile by default
+  let xmlFile = sourceFile;
+
+  // if the sourceFile is a MXL file, we need to unzip it first
+  if (/.mxl$/.test(sourceFile)) {
+    xmlFile = obtainMusicXmlFromMxl(sourceFile);
+  }
 
   // determine the name of the MEI file
-  const meiFile = xmlFile.replace(/\.xml$/, '.mei');
+  const { name } = path.parse(sourceFile);
+  const meiFile = path.join(TMP_PATH, `${name}.mei`);
 
   // return a Promise.
   return new Promise((resolve, reject) => {
@@ -269,14 +321,6 @@ async function transformMusicXMLToMei(digitalDocument) {
 
       return code === 0 ? resolve(meiFile) : reject(errorOutput);
     });
-  }).finally(() => {
-    // we always want to remove the downloaded file!
-    try {
-      fs.unlinkSync(xmlFile);
-      fs.unlinkSync(meiFile);
-    } catch (error) {
-      // expected
-    }
   });
 }
 
@@ -290,7 +334,7 @@ async function getControlActionByIdentifier(identifier) {
   const run = execute(link, { query: CONTROL_ACTION_QUERY, variables: { identifier } });
 
   return makePromise(run).then(({ data }) => {
-    if (!data.ControlAction[0]) {
+    if (!data || !data.ControlAction[0]) {
       return Promise.reject(`Failed to query ControlAction with identifier: ${identifier}`);
     }
 
@@ -327,7 +371,7 @@ async function getControlActionObjectValues(controlAction) {
   }
 
   // the algorithm can only process XML files.
-  if (digitalDocument.format !== 'xml') {
+  if (digitalDocument.format !== 'xml' && digitalDocument.format !== 'application/musicxml+zip') {
     return Promise.reject('The MusicXML file must have a XML format');
   }
 
@@ -352,19 +396,23 @@ async function handleSubscriptionUpdate(identifier) {
   const { digitalDocument, resultName } = await getControlActionObjectValues(controlAction);
 
   // we are going to run the algorithm on this ControlAction so we can set the actionStatus to `running`.
-  await mutateControlAction(identifier, 'running');
+  await mutateControlAction(identifier, 'ActiveActionStatus');
 
-  // run the algorithm!
-  const meiFile = await transformMusicXMLToMei(digitalDocument);
+  try {
+    // run the algorithm!
+    const meiFile = await transformMusicXMLToMei(digitalDocument);
 
-  // the result of this algorithm is a new DigitalDocument.
-  const { CreateDigitalDocument } = await createDigitalDocument(meiFile, resultName);
+    // the result of this algorithm is a new DigitalDocument.
+    const { CreateDigitalDocument } = await createDigitalDocument(meiFile, resultName);
 
-  // link the newly created DigitalDocument to the ControlAction.
-  await addResultToControlAction(identifier, CreateDigitalDocument.identifier);
+    // link the newly created DigitalDocument to the ControlAction.
+    await addResultToControlAction(identifier, CreateDigitalDocument.identifier);
 
-  // everything looks good, set the ControlAction actionStatus to complete.
-  await mutateControlAction(identifier, 'complete');
+    // everything looks good, set the ControlAction actionStatus to complete.
+    await mutateControlAction(identifier, 'CompletedActionStatus', '');
+  } catch (error) {
+    await mutateControlAction(identifier, 'FailedActionStatus', error.message);
+  }
 }
 
 // subscribe to updates
@@ -378,6 +426,8 @@ execute(link, { query: CONTROL_ACTION_SUBSCRIPTION }).subscribe(({ data }) => {
     debug('Error caught while running algorithm:', error);
 
     // update the actionStatus and error property of the ControlAction
-    return mutateControlAction(identifier, 'error', error);
+    return mutateControlAction(identifier, 'FailedActionStatus', error);
   });
 });
+
+handleSubscriptionUpdate('46ca820a-ca09-443c-861f-114ff45b32d7').catch(console.log);

@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import styles from './PropertyValueSpecificationField.styles';
 
 /**
- * Dynamically render an input based on the `disambiguatingDescription`
+ * Dynamically render an input based on the `valuePattern` property.
  */
 class PropertyValueSpecificationField extends Component {
   static propTypes = {
@@ -21,15 +21,17 @@ class PropertyValueSpecificationField extends Component {
     const { field, onChange } = this.props;
     const { value }           = event.currentTarget;
 
-    // for now only validate required
+    // for now only validate when required
     if (field.valueRequired && !value) {
       this.setState({ valid: false });
     } else if (!this.state.valid) {
       this.setState({ valid: true });
     }
 
-    // proxy onChange event
-    onChange(field, value);
+    // proxy onChange event to parent component
+    if (typeof onChange === 'function') {
+      onChange(field, value);
+    }
   };
 
   renderNumberField() {
@@ -77,7 +79,7 @@ class PropertyValueSpecificationField extends Component {
   render() {
     const { field } = this.props;
 
-    switch (field.disambiguatingDescription) {
+    switch (field.valuePattern) {
     case 'Int':
     case 'Float':
       return this.renderNumberField();

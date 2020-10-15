@@ -2,7 +2,7 @@
 # BUILD VEROVIO
 ###############
 
-FROM buildpack-deps:jessie-scm AS build-env
+FROM buildpack-deps:stretch AS build-env
 
 ARG VEROVIO_VERSION=2.0.2
 
@@ -14,7 +14,7 @@ RUN cmake . && make && make install/strip
 #############
 # FINAL IMAGE
 #############
-FROM node:8.15.1-jessie
+FROM node:14-stretch
 
 COPY --from=build-env /usr/local/bin/verovio /usr/local/bin/verovio
 COPY --from=build-env /usr/local/share/verovio /usr/local/share/verovio

@@ -120,9 +120,18 @@ class ResourceSelectDialog extends Component {
 }
 
 export const SEARCH_METADATA_QUERY = gql`
-    query {
-        DigitalDocument {
-            __typename
+    query ($substring: String!) {
+        searchResults: searchMetadataText(substring: $substring, onTypes: [DigitalDocument]) {
+            ... on DigitalDocument {
+                identifier
+                title
+                description
+                contributor
+                thumbnailUrl
+            }
+        }
+        
+        list: DigitalDocument {
             identifier
             title
             description
@@ -136,6 +145,11 @@ export default providers(
   ResourceSelectDialog,
   graphql(SEARCH_METADATA_QUERY, {
     name: 'search',
+    options: {
+      variables: {
+        substring: '',
+      },
+    },
   }),
   withStyles(styles),
 );
