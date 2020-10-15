@@ -1,11 +1,11 @@
-# ce-digital-score-edition-component
+# ce-poc-algorithm
 
-Welcome to the CE Digital Score Edition Component repository!
+Welcome to the ce-poc-algorithm repository!
 
 ## Quick Start
 
 1. Make sure you have Docker installed and running on your local machine
-2. Make sure you are running the [CE API](https://github.com/trompamusic/ce-digital) on your local machine.
+2. Make sure you are running the [CE API](https://github.com/trompamusic/ce-api) on your local machine.
 3. Prepare the CE API with the initial data set by running all GraphQL queries in the `Initial data` section.
 4. Run the the following command to start the containers `$ docker-compose up`
 
@@ -17,7 +17,7 @@ The algorithm container starts a NodeJS script which subscribes to changes in th
 
 The frontend container is a `Create React App` application which visualises all ControlActions in the CE API and allows you to request new ControlActions with the required PropertyValues.
 
-Visit the UI by navigating to http://localhost:8080.  
+Visit the UI by navigating to http://localhost:8080.
 
 ## Initial data
 
@@ -96,7 +96,7 @@ mutation {
     identifier: "78d613b0-1064-4e9c-8f56-9c424d12bad9"
     description: "MusicXML to MEI conversion"
     name: "MusicXML to MEI conversion"
-    actionStatus: accepted
+    actionStatus: PotentialActionStatus
   ) {
     identifier
     description
@@ -109,21 +109,17 @@ mutation {
 
 ```
 mutation {
-  AddThingInterfacePotentialAction (
-    from: { identifier: "d7a3b614-4c40-413f-99d6-c0da2c844963", type:EntryPoint }
-    to: { identifier: "78d613b0-1064-4e9c-8f56-9c424d12bad9", type: ControlAction }
-  ) {
-    from {
-      ... on EntryPoint {
-        identifier
-      }
+    AddEntryPointPotentialAction (
+        from: { identifier: "d7a3b614-4c40-413f-99d6-c0da2c844963" }
+    to: { identifier: "78d613b0-1064-4e9c-8f56-9c424d12bad9" }
+    ) { 
+        from {
+            identifier
+        }
+        to {
+            identifier
+        }
     }
-    to {
-      ... on ControlAction {
-        identifier
-      }
-    }
-  }
 }
 ```
 
@@ -147,10 +143,9 @@ mutation {
 
 ```
 mutation {
-  AddActionInterfaceThingInterface (
-    from: {identifier: "78d613b0-1064-4e9c-8f56-9c424d12bad9", type: ControlAction}
-    to: {identifier: "2c796031-a303-460a-849d-0be95fb96b03", type: Property}
-    field: object
+  AddControlActionObject (
+    from: {identifier: "78d613b0-1064-4e9c-8f56-9c424d12bad9" }
+    to: {identifier: "2c796031-a303-460a-849d-0be95fb96b03" }
   ) {
     from {
       __typename
@@ -192,10 +187,9 @@ mutation {
 
 ```
 mutation {
-  AddActionInterfaceThingInterface (
-    from: {identifier: "78d613b0-1064-4e9c-8f56-9c424d12bad9", type: ControlAction}
-    to: {identifier: "f145799e-9612-43cb-9164-ac2d9ea2f460", type: PropertyValueSpecification}
-    field: object
+  AddControlActionObject (
+    from: {identifier: "78d613b0-1064-4e9c-8f56-9c424d12bad9" }
+    to: {identifier: "f145799e-9612-43cb-9164-ac2d9ea2f460" }
   ) {
     from {
       __typename
