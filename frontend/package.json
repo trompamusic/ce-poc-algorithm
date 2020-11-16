@@ -59,7 +59,7 @@
     "eslint-config-react-app-vd": "^1.0.4",
     "eslint-plugin-react": "^7.4.0",
     "node-emoji": "^1.8.1",
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^2.6.1",
     "react-test-renderer": "^16.0.0"
   },
   "jest": {
