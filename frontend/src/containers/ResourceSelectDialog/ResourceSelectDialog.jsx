@@ -12,6 +12,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
+import MultiModalComponent, { SearchConfig, searchTypes } from 'trompa-multimodal-component';
 import { providers } from '../../utils';
 import styles from './ResourceSelectDialog.styles';
 
@@ -30,51 +31,14 @@ class ResourceSelectDialog extends Component {
 
   state = {
     selected: null,
-  };
-
-  handleResultClick = (event, details) => {
-    this.setState({
-      selected: { ...details },
-    });
-  };
-
-  handleSelectClick = event => {
-    const { selected } = this.state;
-
-    if (typeof this.props.onSelect === 'function') {
-      this.props.onSelect(event, selected);
-    }
-  };
-
-  renderResult = result => {
-    const { classes }  = this.props;
-    const { selected } = this.state;
-
-    return (
-      <article
-        className={classNames(classes.result, {
-          [classes.resultSelected]: selected && selected.identifier === result.identifier,
-        })}
-        onClick={event => this.handleResultClick(event, result)}
-        key={result.identifier}
-      >
-        <Typography variant="h6" color="primary">
-          {result.title}
-        </Typography>
-        <Typography variant="subtitle1">
-          {result.__typename} by {result.contributor}
-        </Typography>
-        <Typography>
-          {result.description}
-        </Typography>
-      </article>
-    );
+    config: new SearchConfig({
+      searchTypes: [searchTypes.DigitalDocument],
+      fixedFilter: { format_in: ["application/musicxml", "application/musicxml+zip"] },
+    }),
   };
 
   render() {
-    const { classes, search, open, onClose } = this.props;
-
-    const results = (search && search.DigitalDocument) || [];
+    const { classes, open, onClose } = this.props;
 
     return (
       <Dialog
@@ -82,74 +46,19 @@ class ResourceSelectDialog extends Component {
           className: classes.paper,
         }}
         onClose={onClose}
+        keepMounted={false}
         open={open}
       >
-        <header className={classes.header}>
-          <div className={classes.inputWrapper}>
-            <InputBase className={classes.inputBase} placeholder="Enter search term" fullWidth disabled />
-            <div className={classes.inputAdornment}>
-              <IconButton color="primary">
-                <SearchIcon />
-              </IconButton>
-            </div>
-          </div>
-          <Typography>{results.length} results</Typography>
-        </header>
-        <DialogContent className={classes.content}>
-          <section>
-            {results.map(this.renderResult)}
-          </section>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={this.props.onClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            color="primary"
-            disabled={!this.state.selected}
-            onClick={this.handleSelectClick}
-          >
-            Select
-          </Button>
-        </DialogActions>
+        <MultiModalComponent
+          config={this.state.config}
+          onResultClick={node => this.props.onSelect(null, node)}
+        />
       </Dialog>
     );
   }
 }
 
-export const SEARCH_METADATA_QUERY = gql`
-    query ($substring: String!) {
-        searchResults: searchMetadataText(substring: $substring, onTypes: [DigitalDocument]) {
-            ... on DigitalDocument {
-                identifier
-                title
-                description
-                contributor
-                thumbnailUrl
-            }
-        }
-        
-        list: DigitalDocument {
-            identifier
-            title
-            description
-            contributor
-            thumbnailUrl
-        }
-    }
-`;
-
 export default providers(
   ResourceSelectDialog,
-  graphql(SEARCH_METADATA_QUERY, {
-    name: 'search',
-    options: {
-      variables: {
-        substring: '',
-      },
-    },
-  }),
   withStyles(styles),
 );

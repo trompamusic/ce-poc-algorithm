@@ -55,7 +55,7 @@ class ControlActionList extends Component {
 
 export const CONTROL_ACTIONS_QUERY = gql`
     query {
-        ControlAction {
+        ControlAction (first: 100) {
             identifier
             description
             name
@@ -65,7 +65,7 @@ export const CONTROL_ACTIONS_QUERY = gql`
                 title
             }
             object {
-                ... on MetadataInterface {
+                ... on DigitalDocument {
                     identifier
                 }
             }

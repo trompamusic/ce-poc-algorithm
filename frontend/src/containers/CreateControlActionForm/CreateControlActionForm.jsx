@@ -218,10 +218,10 @@ export const ENTRY_POINT_QUERY = gql`
 
 export const CREATE_CONTROL_ACTION = gql`
     mutation (
-    $entryPointIdentifier: ID!,
-    $potentialActionIdentifier: ID!,
-    $propertyObject: [_PropertyInput],
-    $propertyValueObject: [_PropertyValueInput]
+    $entryPointIdentifier: String!,
+    $potentialActionIdentifier: String!,
+    $propertyObject: [PropertyInput],
+    $propertyValueObject: [PropertyValueInput]
 
     ) {
         RequestControlAction (
