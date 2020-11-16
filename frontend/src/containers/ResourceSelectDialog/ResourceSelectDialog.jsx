@@ -74,7 +74,7 @@ class ResourceSelectDialog extends Component {
   render() {
     const { classes, search, open, onClose } = this.props;
 
-    const results = (search && search.DigitalDocument) || [];
+    const results = (search && search.list) || [];
 
     return (
       <Dialog
