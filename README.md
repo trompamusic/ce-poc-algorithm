@@ -253,3 +253,33 @@ mutation {
   }
 }
 ```
+
+### Request control action
+
+```
+mutation {
+	RequestControlAction(
+		controlAction: {
+			entryPointIdentifier: "d7a3b614-4c40-413f-99d6-c0da2c844963"
+			potentialActionIdentifier: "78d613b0-1064-4e9c-8f56-9c424d12bad9"
+			propertyObject: [
+				{
+					potentialActionPropertyIdentifier: "2c796031-a303-460a-849d-0be95fb96b03"
+					nodeIdentifier: "4679dc75-11e4-41c7-b552-cd710df83dba"
+					nodeType: DigitalDocument
+				}
+			]
+			propertyValueObject: [
+				{
+					potentialActionPropertyValueSpecificationIdentifier: "f145799e-9612-43cb-9164-ac2d9ea2f460"
+					value: "Dedham MEI"
+					valuePattern: String
+				}
+			]
+		}
+	) {
+		identifier
+		__typename
+	}
+}
+```
