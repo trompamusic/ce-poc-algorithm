@@ -16,6 +16,8 @@ import MultiModalComponent, { SearchConfig, searchTypes } from 'trompa-multimoda
 import { providers } from '../../utils';
 import styles from './ResourceSelectDialog.styles';
 
+const REACT_APP_GRAPHQL_URL = process.env.REACT_APP_GRAPHQL_URL || 'https://api-test.trompamusic.eu';
+
 class ResourceSelectDialog extends Component {
   static propTypes = {
     open    : PropTypes.bool,
@@ -51,6 +53,7 @@ class ResourceSelectDialog extends Component {
       >
         <MultiModalComponent
           config={this.state.config}
+          uri={REACT_APP_GRAPHQL_URL}
           onResultClick={node => this.props.onSelect(null, node)}
         />
       </Dialog>
