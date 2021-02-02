@@ -349,7 +349,7 @@ async function getControlActionByIdentifier(identifier) {
  * @returns {Promise}
  */
 async function getControlActionObjectValues(controlAction) {
-  const digitalDocumentPropertyValue = controlAction.object.find(({ name }) => name === 'MusicXML File');
+  const digitalDocumentPropertyValue = controlAction.object.find(({ name }) => name === 'targetFile');
   const resultNamePropertyValue = controlAction.object.find(({ name }) => name === 'resultName');
 
   const digitalDocument = digitalDocumentPropertyValue && digitalDocumentPropertyValue.nodeValue;
