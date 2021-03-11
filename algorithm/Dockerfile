@@ -14,7 +14,7 @@ RUN cmake . && make && make install/strip
 #############
 # FINAL IMAGE
 #############
-FROM node:14-stretch
+FROM node:14-buster
 
 COPY --from=build-env /usr/local/bin/verovio /usr/local/bin/verovio
 COPY --from=build-env /usr/local/share/verovio /usr/local/share/verovio
