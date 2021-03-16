@@ -1,3 +1,6 @@
 {
-  "extends": "react-app-vd"
+  "extends": "react-app-vd",
+  "rules": {
+    "import/no-anonymous-default-export": [0]
+  }
 }
