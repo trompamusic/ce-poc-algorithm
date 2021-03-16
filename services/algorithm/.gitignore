@@ -9,6 +9,7 @@ src/__snapshots__
 
 # production
 /build
+/lib
 
 # misc
 .DS_Store

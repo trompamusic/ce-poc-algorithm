@@ -1,5 +1,14 @@
 {
   "name": "ce-poc-algorithm",
   "version": "0.1.0",
-  "private": true
+  "private": true,
+  "scripts": {
+    "start": "concurrently -n algorithm,frontend \"cd services/algorithm && yarn start\" \"cd services/frontend && yarn start\""
+  },
+  "workspaces": [
+    "services/*"
+  ],
+  "dependencies": {
+    "concurrently": "^6.0.0"
+  }
 }
