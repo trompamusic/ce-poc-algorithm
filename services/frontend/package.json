@@ -17,7 +17,7 @@
     "graphql": "^14.1.1",
     "graphql-tag": "^2.10.1",
     "history": "^4.7.2",
-    "i18next": "^10.0.1",
+    "i18next": "^19.9.2",
     "moment": "^2.19.2",
     "object-hash": "^1.2.0",
     "prop-types": "^15.6.0",

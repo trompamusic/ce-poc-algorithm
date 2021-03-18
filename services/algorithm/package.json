@@ -11,17 +11,17 @@
     "serve": "node build/index.js"
   },
   "dependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.3.4",
-    "@babel/node": "^7.2.2",
-    "@babel/preset-env": "^7.3.4",
+    "@babel/cli": "^7.13.10",
+    "@babel/core": "^7.13.10",
+    "@babel/node": "^7.13.10",
+    "@babel/preset-env": "^7.13.10",
     "apollo-link": "^1.2.11",
     "apollo-link-ws": "^1.0.17",
     "bluebird": "^3.5.3",
     "dotenv": "^8.2.0",
     "graphql": "^14.1.1",
     "graphql-tag": "^2.10.1",
-    "nodemon": "^1.18.10",
+    "nodemon": "^1.19.4",
     "subscriptions-transport-ws": "^0.9.16",
     "ws": "^6.2.0"
   }
