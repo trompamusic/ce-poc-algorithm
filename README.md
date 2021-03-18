@@ -4,20 +4,21 @@ Welcome to the ce-poc-algorithm repository!
 
 ## Quick Start
 
-1. Make sure you have Docker installed and running on your local machine
+1. Make sure you have Node.js and Yarn installed on your local machine
 2. Make sure you are running the [CE API](https://github.com/trompamusic/ce-api) on your local machine.
 3. Prepare the CE API with the initial data set by running all GraphQL queries in the `Initial data` section.
-4. Run the the following command to start the containers `$ docker-compose up`
+4. Update the `.env` files in the `./services/algorithm` and `./services/frontend` directories
+5. Run the following command to start the containers `$ yarn start`
 
 ## Algorithm container
 
-The algorithm container starts a NodeJS script which subscribes to changes in the CE API.
+The algorithm container starts a Node.js script which subscribes to changes in the CE API.
 
 ## Frontend container
 
 The frontend container is a `Create React App` application which visualises all ControlActions in the CE API and allows you to request new ControlActions with the required PropertyValues.
 
-Visit the UI by navigating to http://localhost:8080.
+Visit the UI by navigating to http://localhost:3000.
 
 ## Initial data
 

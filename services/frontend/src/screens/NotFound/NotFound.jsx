@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Helmet } from "react-helmet";
+import { Helmet } from 'react-helmet';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';

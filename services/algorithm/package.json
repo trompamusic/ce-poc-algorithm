@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm run clear && babel ./src -d ./build",
     "clear": "rm -rf build && mkdir build",
-    "start": "nodemon src/index.js --exec babel-node",
+    "start": "nodemon -r dotenv/config src/index.js --exec babel-node",
     "serve": "node build/index.js"
   },
   "dependencies": {
@@ -18,6 +18,7 @@
     "apollo-link": "^1.2.11",
     "apollo-link-ws": "^1.0.17",
     "bluebird": "^3.5.3",
+    "dotenv": "^8.2.0",
     "graphql": "^14.1.1",
     "graphql-tag": "^2.10.1",
     "nodemon": "^1.18.10",

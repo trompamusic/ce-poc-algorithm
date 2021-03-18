@@ -23,9 +23,9 @@ class ResourceSelectDialog extends Component {
 
   state = {
     selected: null,
-    config: new SearchConfig({
+    config  : new SearchConfig({
       searchTypes: [searchTypes.DigitalDocument],
-      fixedFilter: { format_in: ["application/musicxml", "application/musicxml+zip"] },
+      fixedFilter: { format_in: ['application/musicxml', 'application/musicxml+zip'] },
     }),
   };
 
