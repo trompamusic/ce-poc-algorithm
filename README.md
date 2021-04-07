@@ -266,7 +266,7 @@ mutation {
 			propertyObject: [
 				{
 					potentialActionPropertyIdentifier: "2c796031-a303-460a-849d-0be95fb96b03"
-					nodeIdentifier: "4679dc75-11e4-41c7-b552-cd710df83dba"
+					nodeIdentifier: "0306892c-33d0-4568-81e1-6dac756b042d"
 					nodeType: DigitalDocument
 				}
 			]
