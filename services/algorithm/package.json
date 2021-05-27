@@ -23,6 +23,6 @@
     "graphql-tag": "^2.10.1",
     "nodemon": "^1.19.4",
     "subscriptions-transport-ws": "^0.9.16",
-    "ws": "^6.2.0"
+    "ws": "^7.4.6"
   }
 }
