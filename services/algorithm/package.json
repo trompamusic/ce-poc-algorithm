@@ -21,7 +21,7 @@
     "dotenv": "^8.2.0",
     "graphql": "^14.1.1",
     "graphql-tag": "^2.10.1",
-    "nodemon": "^1.19.4",
+    "nodemon": "^2.0.3",
     "subscriptions-transport-ws": "^0.9.16",
     "ws": "^6.2.0"
   }
